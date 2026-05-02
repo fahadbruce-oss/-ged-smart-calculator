@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>GED Smart Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Solve.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    :root,[data-theme="light"]{--text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);--text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);--text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);--space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--color-bg:#f7f6f2;--color-surface:#fff;--color-surface-2:#f3f0ec;--color-border:#d8d5ce;--color-text:#1f2428;--color-text-muted:#67737c;--color-text-inverse:#f8fafb;--color-primary:#1f6feb;--color-primary-soft:#dce8ff;--radius-sm:.5rem;--radius-md:.95rem;--radius-lg:1.3rem;--radius-full:999px;--shadow-sm:0 4px 12px rgba(24,34,51,.06);--font-display:'Fraunces',Georgia,serif;--font-body:'DM Sans',Arial,sans-serif;--transition:180ms cubic-bezier(.16,1,.3,1)}
+    [data-theme="dark"]{--color-bg:#101418;--color-surface:#171c21;--color-surface-2:#20262d;--color-border:#303841;--color-text:#eef3f6;--color-text-muted:#b3c0c8;--color-text-inverse:#0f1419;--color-primary:#76a9ff;--color-primary-soft:#1b2c49;--shadow-sm:0 4px 12px rgba(0,0,0,.22)}
+    *,*::before,*::after{box-sizing:border-box} html{-webkit-text-size-adjust:none;text-size-adjust:none} body{margin:0;min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);line-height:1.55;background:var(--color-bg);color:var(--color-text)} button,input,textarea{font:inherit;color:inherit} button{cursor:pointer;border:none;background:none} img{display:block;max-width:100%;height:auto} .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0} :focus-visible{outline:2px solid var(--color-primary);outline-offset:3px}
+    .app-shell{max-width:430px;margin:0 auto;min-height:100dvh;padding:env(safe-area-inset-top) var(--space-4) calc(var(--space-8) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:var(--space-4)} .skip-link{position:absolute;left:-9999px;top:0}.skip-link:focus{left:var(--space-4);top:var(--space-4);background:var(--color-surface);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);z-index:1000}
+    .topbar,.display-label,.shape-header,.tool-header{display:flex;align-items:center;justify-content:space-between}.topbar{padding-top:var(--space-4)} .brand{display:flex;align-items:center;gap:var(--space-3)} .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--color-primary),color-mix(in srgb,var(--color-primary) 70%, white));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-sm)} .brand-text strong{display:block;font-size:var(--text-lg);font-family:var(--font-display);line-height:1.05}.brand-text span{display:block;color:var(--color-text-muted);font-size:var(--text-xs)} .theme-toggle{width:44px;height:44px;border-radius:14px;background:var(--color-surface);border:1px solid var(--color-border);display:grid;place-items:center;box-shadow:var(--shadow-sm)}
+    .panel{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)} .hero,.display,.section,.tool-card{padding:var(--space-5);display:grid;gap:var(--space-3)} .hero h1{margin:0;font-size:var(--text-xl);font-family:var(--font-display);line-height:1.06}.hero p,.small-note,.field-help,.step-item span,.history-item span,.mini-card p,.formula-list li,.ocr-box p,.camera-help{margin:0;color:var(--color-text-muted);font-size:var(--text-sm)}
+    .tab-row,.pill-row,.shape-chip-row,.tool-tabs{display:flex;flex-wrap:wrap;gap:var(--space-2)} .pill,.tab,.shape-chip,.tool-tab,.formula-tag{padding:.52rem .85rem;border-radius:var(--radius-full);background:var(--color-surface-2);color:var(--color-text-muted);font-size:var(--text-xs);border:1px solid var(--color-border)} .tab[aria-pressed="true"],.shape-chip.active,.tool-tab.active{background:var(--color-primary-soft);color:var(--color-primary);border-color:transparent;font-weight:700}
+    .expression-wrap,.history-item,.step-item,.mini-card,.shape-card,.formula-card,.ocr-box,.preview-box{background:var(--color-surface-2);border-radius:var(--radius-md);padding:var(--space-4);border:1px solid var(--color-border)} .expression{width:100%;border:none;background:transparent;font-size:1.2rem;line-height:1.35;min-height:84px;resize:none;outline:none;color:var(--color-text)}
+    .mode-badge,.mini-btn,.ghost-btn,.shape-action,.camera-btn{padding:.55rem .9rem;border-radius:var(--radius-full);font-size:var(--text-xs);min-height:44px} .mode-badge,.shape-action.primary,.mini-btn,.camera-btn.primary{background:var(--color-primary-soft);color:var(--color-primary);font-weight:700} .ghost-btn,.camera-btn.secondary{background:var(--color-surface);border:1px solid var(--color-border);color:var(--color-text-muted)}
+    .result-label{font-size:var(--text-xs);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em}.result{font-size:1.8rem;font-weight:700;word-break:break-word}.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-2);padding:0 var(--space-5) var(--space-5)} .key{min-height:54px;border-radius:var(--radius-md);background:var(--color-surface-2);border:1px solid var(--color-border);font-weight:700;transition:transform var(--transition),background var(--transition)} .key:active,.shape-card button:active,.tab:active,.tool-tab:active{transform:scale(.98)} .key.primary{background:var(--color-primary);color:var(--color-text-inverse);border-color:transparent} .key.soft{background:var(--color-primary-soft);color:var(--color-primary);border-color:transparent}.key.wide{grid-column:span 2}
+    .cards,.history-list,.steps-list,.tips,.grid-right,.shape-grid,.shape-fields,.formula-grid,.ocr-actions{display:grid;gap:var(--space-3)} .section h2,.shape-title,.formula-card h3,.tool-card h2{margin:0;font-size:var(--text-lg)} .mini-card button,.shape-action,.ghost-btn,.camera-btn{justify-self:start;border:1px solid transparent} .formula-line,.history-item strong{display:block;font-size:var(--text-sm);font-weight:700}
+    .shape-card,.tool-card{display:grid;gap:var(--space-3)} .shape-visual{width:52px;height:52px;border-radius:16px;background:var(--color-surface);border:1px solid var(--color-border);display:grid;place-items:center;color:var(--color-primary)} .shape-fields input,.ocr-box textarea{width:100%;min-height:46px;border-radius:14px;border:1px solid var(--color-border);background:var(--color-surface);padding:0 .9rem} .ocr-box textarea{min-height:120px;padding:.9rem} .shape-fields label{display:grid;gap:.35rem;font-size:var(--text-xs);color:var(--color-text-muted)} .shape-actions{display:flex;flex-wrap:wrap;gap:var(--space-2)} .shape-card[hidden],.geometry-panel[hidden],.tool-card[hidden]{display:none}
+
+    .accent-hero{background:linear-gradient(135deg,color-mix(in srgb,var(--color-primary) 12%, var(--color-surface)) 0%, color-mix(in srgb,var(--color-primary) 4%, var(--color-surface)) 100%)}
+    .accent-calc{background:linear-gradient(135deg,color-mix(in srgb,#22c55e 12%, var(--color-surface)) 0%, color-mix(in srgb,#22c55e 4%, var(--color-surface)) 100%)}
+    .accent-geo{background:linear-gradient(135deg,color-mix(in srgb,#f59e0b 12%, var(--color-surface)) 0%, color-mix(in srgb,#f59e0b 4%, var(--color-surface)) 100%)}
+    .accent-tools{background:linear-gradient(135deg,color-mix(in srgb,#8b5cf6 12%, var(--color-surface)) 0%, color-mix(in srgb,#8b5cf6 4%, var(--color-surface)) 100%)}
+    .accent-quiz{background:linear-gradient(135deg,color-mix(in srgb,#ef4444 12%, var(--color-surface)) 0%, color-mix(in srgb,#ef4444 4%, var(--color-surface)) 100%)}
+    .accent-progress{background:linear-gradient(135deg,color-mix(in srgb,#14b8a6 12%, var(--color-surface)) 0%, color-mix(in srgb,#14b8a6 4%, var(--color-surface)) 100%)}
+    .accent-history{background:linear-gradient(135deg,color-mix(in srgb,#64748b 10%, var(--color-surface)) 0%, color-mix(in srgb,#64748b 3%, var(--color-surface)) 100%)}
+    .formula-list{margin:0;padding-left:1rem;display:grid;gap:.45rem} .formula-grid{grid-template-columns:1fr} .preview-box{display:grid;gap:var(--space-3)} .preview-image{width:100%;border-radius:14px;border:1px solid var(--color-border);background:var(--color-surface);object-fit:contain;max-height:220px} .status{font-size:var(--text-xs);color:var(--color-text-muted)}
+    @media (min-width:700px){.app-shell{max-width:760px}.stack{display:grid;grid-template-columns:1.16fr .84fr;gap:var(--space-4)}.cards,.shape-grid,.formula-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to calculator</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14"></path><path d="M7 10h10"></path><path d="M8 14h3"></path><path d="M13 14h3"></path><path d="M7 18h10"></path></svg></div>
+        <div class="brand-text"><strong>GED Smart Calculator</strong><span>Simple math helper for iPhone</span></div>
+      </div>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme"><i data-lucide="moon"></i></button>
+    </header>
+
+    <main id="main" class="stack">
+      <section class="panel accent-hero">
+        <div class="hero">
+          <h1>Smart calculator, formula sheet, and camera picture support for GED study.</h1>
+          <p>You can now use formula cards, geometry buttons, and a camera picture section that reads math text from a photo.</p>
+          <div class="tab-row" role="group" aria-label="Math modes">
+            <button class="tab" type="button" data-mode="advanced" aria-pressed="true">Advanced</button>
+            <button class="tab" type="button" data-mode="fraction" aria-pressed="false">Fraction</button>
+            <button class="tab" type="button" data-mode="equation" aria-pressed="false">Equation</button>
+            <button class="tab" type="button" data-mode="geometry" aria-pressed="false">Geometry</button>
+          </div>
+          <div class="pill-row"><span class="pill">Fractions</span><span class="pill">Roots</span><span class="pill">Formula sheet</span><span class="pill">Camera OCR</span><span class="pill">Geometry</span></div>
+        </div>
+
+        <div class="display">
+          <div class="display-label"><span class="result-label">Smart input</span><span class="mode-badge" id="modeBadge">Advanced</span></div>
+          <div class="expression-wrap">
+            <label class="sr-only" for="expression">Math input</label>
+            <textarea id="expression" class="expression" spellcheck="false" placeholder="Examples: (3/4)+(2/5), sqrt(81)+2^3, 2x+5=17"></textarea>
+          </div>
+          <div><span class="result-label">Answer</span><div class="result" id="result">0</div><div class="field-help" id="helperText">Use sqrt( ) for roots, ^ for powers, and / for fractions.</div></div>
+          <div><span class="result-label">Steps</span><div class="steps-list" id="stepsList"><div class="step-item"><div class="formula-line">Ready</div><span>Your study steps will appear here.</span></div></div></div>
+        </div>
+
+        <section class="section geometry-panel" id="geometryPanel" hidden>
+          <div class="shape-header"><h2 class="shape-title">Geometry helper</h2><span class="formula-tag" id="shapeFormulaTag">Choose a shape</span></div>
+          <div class="shape-chip-row" role="group" aria-label="Choose geometry shape">
+            <button class="shape-chip active" type="button" data-shape="rectangle">Rectangle</button>
+            <button class="shape-chip" type="button" data-shape="triangle">Triangle</button>
+            <button class="shape-chip" type="button" data-shape="circle">Circle</button>
+            <button class="shape-chip" type="button" data-shape="slope">Slope</button>
+            <button class="shape-chip" type="button" data-shape="volume">Volume</button>
+          </div>
+          <div class="shape-grid">
+            <article class="shape-card" data-shape-card="rectangle"><div class="shape-visual"><i data-lucide="rectangle-horizontal"></i></div><div><h3 class="formula-line">Rectangle</h3><p class="small-note">Area and perimeter with length and width.</p></div><div class="shape-fields"><label>Length<input id="rectLength" type="number" inputmode="decimal" placeholder="8"></label><label>Width<input id="rectWidth" type="number" inputmode="decimal" placeholder="5"></label></div><div class="shape-actions"><button class="shape-action primary" type="button" data-geo-action="rect-area">Area</button><button class="ghost-btn" type="button" data-geo-action="rect-perimeter">Perimeter</button></div></article>
+            <article class="shape-card" data-shape-card="triangle" hidden><div class="shape-visual"><i data-lucide="triangle"></i></div><div><h3 class="formula-line">Triangle</h3><p class="small-note">Area with base and height.</p></div><div class="shape-fields"><label>Base<input id="triBase" type="number" inputmode="decimal" placeholder="10"></label><label>Height<input id="triHeight" type="number" inputmode="decimal" placeholder="6"></label></div><div class="shape-actions"><button class="shape-action primary" type="button" data-geo-action="triangle-area">Area</button></div></article>
+            <article class="shape-card" data-shape-card="circle" hidden><div class="shape-visual"><i data-lucide="circle"></i></div><div><h3 class="formula-line">Circle</h3><p class="small-note">Area and circumference with radius.</p></div><div class="shape-fields"><label>Radius<input id="circleRadius" type="number" inputmode="decimal" placeholder="4"></label></div><div class="shape-actions"><button class="shape-action primary" type="button" data-geo-action="circle-area">Area</button><button class="ghost-btn" type="button" data-geo-action="circle-circumference">Circumference</button></div></article>
+            <article class="shape-card" data-shape-card="slope" hidden><div class="shape-visual"><i data-lucide="chart-no-axes-combined"></i></div><div><h3 class="formula-line">Slope</h3><p class="small-note">Find slope from two points.</p></div><div class="shape-fields"><label>x1<input id="slopeX1" type="number" inputmode="decimal" placeholder="2"></label><label>y1<input id="slopeY1" type="number" inputmode="decimal" placeholder="1"></label><label>x2<input id="slopeX2" type="number" inputmode="decimal" placeholder="4"></label><label>y2<input id="slopeY2" type="number" inputmode="decimal" placeholder="4"></label></div><div class="shape-actions"><button class="shape-action primary" type="button" data-geo-action="slope">Find slope</button></div></article>
+            <article class="shape-card" data-shape-card="volume" hidden><div class="shape-visual"><i data-lucide="box"></i></div><div><h3 class="formula-line">Volume</h3><p class="small-note">Prism and cylinder volume.</p></div><div class="shape-fields"><label>Length / radius<input id="volA" type="number" inputmode="decimal" placeholder="6"></label><label>Width / height<input id="volB" type="number" inputmode="decimal" placeholder="3"></label><label>Height<input id="volC" type="number" inputmode="decimal" placeholder="2"></label></div><div class="shape-actions"><button class="shape-action primary" type="button" data-geo-action="prism-volume">Prism volume</button><button class="ghost-btn" type="button" data-geo-action="cylinder-volume">Cylinder volume</button></div></article>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button class="key soft" data-insert="sqrt(">sqrt</button><button class="key soft" data-insert="^">x^y</button><button class="key soft" data-insert="(">(</button><button class="key soft" data-insert=")">)</button>
+          <button class="key" data-insert="7">7</button><button class="key" data-insert="8">8</button><button class="key" data-insert="9">9</button><button class="key soft" data-insert="/">/</button>
+          <button class="key" data-insert="4">4</button><button class="key" data-insert="5">5</button><button class="key" data-insert="6">6</button><button class="key soft" data-insert="*">×</button>
+          <button class="key" data-insert="1">1</button><button class="key" data-insert="2">2</button><button class="key" data-insert="3">3</button><button class="key soft" data-insert="-">−</button>
+          <button class="key" data-insert="0">0</button><button class="key" data-insert=".">.</button><button class="key soft" id="backBtn" type="button">⌫</button><button class="key soft" data-insert="+">+</button>
+          <button class="key wide" id="clearBtn" type="button">Clear</button><button class="key wide primary" id="solveBtn" type="button">Solve</button>
+        </div>
+      </section>
+
+      <div class="grid-right">
+        <section class="panel tool-card accent-tools">
+          <div class="tool-header"><h2>Study tools</h2><span class="formula-tag">Tap a section</span></div>
+          <div class="tool-tabs">
+            <button class="tool-tab active" type="button" data-tool="formulas">Formula sheet</button>
+            <button class="tool-tab" type="button" data-tool="camera">Camera picture</button>
+          </div>
+
+          <div class="tool-card" id="formulaTool">
+            <h2>GED formula sheet</h2>
+            <div class="formula-grid">
+              <article class="formula-card"><h3>Area</h3><ul class="formula-list"><li>Rectangle: A = lw</li><li>Triangle: A = 1/2 bh</li><li>Circle: A = πr²</li></ul></article>
+              <article class="formula-card"><h3>Perimeter and circle</h3><ul class="formula-list"><li>Rectangle perimeter: P = 2l + 2w</li><li>Circle circumference: C = 2πr</li></ul></article>
+              <article class="formula-card"><h3>Volume</h3><ul class="formula-list"><li>Rectangular prism: V = lwh</li><li>Cylinder: V = πr²h</li></ul></article>
+              <article class="formula-card"><h3>Coordinate math</h3><ul class="formula-list"><li>Slope: m = (y₂ - y₁) / (x₂ - x₁)</li><li>Use rise over run</li></ul></article>
+            </div>
+          </div>
+
+          <div class="tool-card" id="cameraTool" hidden>
+            <h2>Camera picture support</h2>
+            <div class="ocr-box">
+              <p>Take a picture of a math problem or choose one from your iPhone. The app uses browser OCR to read text from the image, then you can copy it into the calculator.</p>
+              <label class="camera-btn primary" for="cameraInput">Take or choose picture</label>
+              <input id="cameraInput" type="file" accept="image/*" capture="environment" class="sr-only">
+              <div class="ocr-actions">
+                <button class="camera-btn secondary" type="button" id="readImageBtn">Read math text</button>
+                <button class="camera-btn secondary" type="button" id="useOcrTextBtn">Use text in calculator</button>
+              </div>
+              <div class="status" id="ocrStatus">No picture selected yet.</div>
+            </div>
+            <div class="preview-box">
+              <img id="previewImage" class="preview-image" alt="Selected math picture preview" loading="lazy" width="600" height="360" hidden>
+              <textarea id="ocrText" placeholder="OCR text from your math picture will show here."></textarea>
+              <p class="camera-help">Tip: a clear photo with dark writing and good lighting gives better OCR results.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel section accent-calc"><h2>Quick examples</h2><div class="cards"><article class="mini-card"><h3 class="formula-line">Fractions</h3><p>Add and simplify fractions with short steps.</p><button class="mini-btn" type="button" data-example="(3/4)+(2/5)" data-mode-set="fraction">Try 3/4 + 2/5</button></article><article class="mini-card"><h3 class="formula-line">Roots</h3><p>Use roots and order of operations.</p><button class="mini-btn" type="button" data-example="sqrt(144)+6" data-mode-set="advanced">Try sqrt(144) + 6</button></article><article class="mini-card"><h3 class="formula-line">Equation</h3><p>Solve one-variable equations like 2x + 5 = 17.</p><button class="mini-btn" type="button" data-example="2x+5=17" data-mode-set="equation">Try 2x + 5 = 17</button></article><article class="mini-card"><h3 class="formula-line">Geometry</h3><p>Open Geometry mode and use shape cards instead of typing.</p><button class="mini-btn" type="button" id="openGeometryBtn">Open geometry</button></article></div></section>
+
+        <section class="panel section accent-quiz" id="quizSection">
+          <h2>Practice quiz</h2>
+          <div class="tool-tabs">
+            <button class="tool-tab active" type="button" data-quiz-mode="fractions">Fractions</button>
+            <button class="tool-tab" type="button" data-quiz-mode="equations">Equations</button>
+            <button class="tool-tab" type="button" data-quiz-mode="geometry">Geometry</button>
+          </div>
+          <div class="mini-card" id="quizCard">
+            <h3 class="formula-line" id="quizTitle">Fractions</h3>
+            <p id="quizPrompt">What is 1/2 + 1/4 ?</p>
+            <div class="shape-actions">
+              <button class="mini-btn" type="button" id="quizShowBtn">Show answer</button>
+              <button class="ghost-btn" type="button" id="quizNextBtn">Next question</button>
+            </div>
+            <div class="status" id="quizAnswer" hidden></div>
+          </div>
+        </section>
+
+        <section class="panel section accent-progress" id="progressSection">
+          <h2>Practice progress</h2>
+          <div class="mini-card">
+            <div class="display-label"><span>Score</span><span class="formula-tag" id="scoreText">0 correct</span></div>
+            <div class="small-note">Your quiz answers are saved on this device.</div>
+            <div style="width:100%;height:14px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:999px;overflow:hidden;">
+              <div id="progressBar" style="height:100%;width:0%;background:var(--color-primary);"></div>
+            </div>
+            <div class="small-note" id="progressDetail">0 of 0 questions completed.</div>
+            <div class="shape-actions">
+              <button class="mini-btn" type="button" id="resetProgressBtn">Reset progress</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel section accent-history"><h2>Recent work</h2><div class="history-list" id="historyList"><div class="history-item"><strong>No solved problems yet</strong><span>Your last answers will show here.</span></div></div></section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const expression=document.getElementById('expression'), result=document.getElementById('result'), helperText=document.getElementById('helperText'), historyList=document.getElementById('historyList'), modeBadge=document.getElementById('modeBadge'), stepsList=document.getElementById('stepsList'), root=document.documentElement, themeToggle=document.querySelector('[data-theme-toggle]'), geometryPanel=document.getElementById('geometryPanel'), shapeFormulaTag=document.getElementById('shapeFormulaTag');
+    const cameraInput=document.getElementById('cameraInput'), previewImage=document.getElementById('previewImage'), ocrText=document.getElementById('ocrText'), ocrStatus=document.getElementById('ocrStatus'), readImageBtn=document.getElementById('readImageBtn'), useOcrTextBtn=document.getElementById('useOcrTextBtn'), clearImageBtn=document.getElementById('clearImageBtn');
+    let theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light', history=[], currentMode='advanced', currentShape='rectangle', selectedImageFile=null;
+    function updateThemeIcon(){root.setAttribute('data-theme',theme);themeToggle.innerHTML=theme==='dark'?'<i data-lucide="sun"></i>':'<i data-lucide="moon"></i>';themeToggle.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode'); if(window.lucide) lucide.createIcons();}
+    updateThemeIcon(); themeToggle.addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';updateThemeIcon();});
+    function setMode(mode){currentMode=mode; modeBadge.textContent=mode.charAt(0).toUpperCase()+mode.slice(1); document.querySelectorAll('[data-mode]').forEach(btn=>btn.setAttribute('aria-pressed',btn.dataset.mode===mode?'true':'false')); const placeholders={advanced:'Examples: (3/4)+(2/5), sqrt(81)+2^3',fraction:'Example: (3/4)+(2/5) or 7/8-1/4',equation:'Example: 2x+5=17',geometry:'Use the shape cards below or type rect-area 8 5'}; expression.placeholder=placeholders[mode]; geometryPanel.hidden=mode!=='geometry';}
+    document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode))); document.getElementById('openGeometryBtn').addEventListener('click',()=>setMode('geometry'));
+    document.querySelectorAll('.tool-tab').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tool-tab').forEach(t=>t.classList.toggle('active',t===btn)); document.getElementById('formulaTool').hidden=btn.dataset.tool!=='formulas'; document.getElementById('cameraTool').hidden=btn.dataset.tool!=='camera';}));
+    function setShape(shape){currentShape=shape; document.querySelectorAll('.shape-chip').forEach(btn=>btn.classList.toggle('active',btn.dataset.shape===shape)); document.querySelectorAll('[data-shape-card]').forEach(card=>card.hidden=card.dataset.shapeCard!==shape); const tags={rectangle:'A = lw or P = 2l + 2w',triangle:'A = 1/2 bh',circle:'A = πr² or C = 2πr',slope:'m = (y₂-y₁)/(x₂-x₁)',volume:'V = lwh or V = πr²h'}; shapeFormulaTag.textContent=tags[shape]; if(window.lucide) lucide.createIcons();}
+    document.querySelectorAll('.shape-chip').forEach(btn=>btn.addEventListener('click',()=>setShape(btn.dataset.shape)));
+    function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a||1;} function fractionFromDecimal(value){if(!Number.isFinite(value)) return null; const rounded=Math.round(value*1000000)/1000000; const sign=rounded<0?-1:1; const abs=Math.abs(rounded); if(Number.isInteger(abs)) return {n:sign*abs,d:1}; const s=abs.toString(); const decimals=(s.split('.')[1]||'').length; const denominator=Math.pow(10,decimals); const numerator=Math.round(abs*denominator)*sign; const divisor=gcd(numerator,denominator); return {n:numerator/divisor,d:denominator/divisor};}
+    function mixedNumber(frac){if(!frac||frac.d===1) return null; const sign=frac.n<0?-1:1; const absN=Math.abs(frac.n); const whole=Math.floor(absN/frac.d); const rem=absN%frac.d; if(!whole||!rem) return null; return (sign<0?'-':'')+whole+' '+rem+'/'+frac.d;}
+    function renderSteps(items){stepsList.innerHTML=items.map(item=>'<div class="step-item"><div class="formula-line">'+item.title+'</div><span>'+item.text+'</span></div>').join('');}
+    function sanitizeExpr(raw){let expr=raw.trim().toLowerCase(); expr=expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-'); expr=expr.replace(/(\d)([a-z])/g,'$1*$2').replace(/([a-z])(\d)/g,'$1*$2').replace(/\)([a-z0-9])/g,')*$1'); expr=expr.replace(/\bpi\b/g,'Math.PI').replace(/\be\b/g,'Math.E'); expr=expr.replace(/sqrt\(/g,'Math.sqrt('); expr=expr.replace(/(\d+)\s*\^\s*(\d+)/g,'($1**$2)'); expr=expr.replace(/\)\s*\^\s*(\d+)/g,')**$1'); expr=expr.replace(/%/g,'/100'); return expr;}
+    function safeEvaluate(raw){const expr=sanitizeExpr(raw); if(!expr) return {value:0,clean:'0'}; if(/[^0-9+\-*/().,%\sMathPIEqrt*a-z=]/i.test(expr)) throw new Error('Use numbers and normal math symbols only.'); const value=Function('return ('+expr+')')(); if(!Number.isFinite(value)) throw new Error('This problem does not give a normal number.'); return {value,clean:expr};}
+    function solveAdvanced(raw){const {value,clean}=safeEvaluate(raw); const rounded=Math.round(value*1000000)/1000000; const frac=fractionFromDecimal(rounded); const steps=[{title:'Read the problem',text:raw.trim()}]; if(/math\.sqrt/.test(clean)) steps.push({title:'Root step',text:'Find the square root value first.'}); if(/\*\*/.test(clean)) steps.push({title:'Power step',text:'Evaluate the exponent before adding or subtracting.'}); steps.push({title:'Order of operations',text:'Solve parentheses, then powers, then multiply or divide, then add or subtract.'}); let help='Decimal answer ready.'; if(frac&&frac.d!==1){const mixed=mixedNumber(frac); help='Fraction form: '+frac.n+'/'+frac.d+(mixed?'  |  Mixed: '+mixed:'');} return {answer:String(rounded),help,steps};}
+    function solveFraction(raw){const {value}=safeEvaluate(raw); const frac=fractionFromDecimal(value); if(!frac) throw new Error('Enter a valid fraction problem.'); const simplified=frac.n+'/'+frac.d; const mixed=mixedNumber(frac); const decimal=Math.round(value*1000000)/1000000; return {answer:simplified,help:'Decimal: '+decimal+(mixed?'  |  Mixed: '+mixed:''),steps:[{title:'Read the fraction problem',text:raw.trim()},{title:'Find one answer value',text:'Compute the fraction operation carefully.'},{title:'Reduce the fraction',text:'Divide the top and bottom by their greatest common factor.'},{title:'Check the form',text:mixed?'Write the answer as a mixed number if needed.':'The reduced fraction is the final form.'}]};}
+    function solveEquation(raw){if(!raw.includes('=')) throw new Error('Write the equation with = , like 2x+5=17.'); const eq=raw.replace(/\s+/g,''); const variableMatch=eq.match(/[a-z]/i); const variable=variableMatch?variableMatch[0]:'x'; const solution=nerdamer.solve(eq,variable).toString(); return {answer:variable+' = '+solution,help:'Equation solved for '+variable+'.',steps:[{title:'Start with the equation',text:eq},{title:'Balance both sides',text:'Whatever you do on one side, do the same on the other side.'},{title:'Isolate the variable',text:'Undo addition or subtraction first, then multiplication or division.'},{title:'Check the answer',text:'Put the value back into the original equation.'}]};}
+    function solveGeometryCommand(cmd){const parts=cmd.trim().toLowerCase().split(/\s+/); const type=parts[0]; const nums=parts.slice(1).map(Number); const pi=3.14; if(type==='rect-area'){const[l,w]=nums; return {answer:String(l*w),help:'Formula: A = l × w',steps:[{title:'Choose the formula',text:'Rectangle area uses A = l × w.'},{title:'Substitute values',text:'A = '+l+' × '+w},{title:'Multiply',text:'A = '+(l*w)+' square units.'}]};} if(type==='rect-perimeter'){const[l,w]=nums; return {answer:String(2*l+2*w),help:'Formula: P = 2l + 2w',steps:[{title:'Choose the formula',text:'Rectangle perimeter uses P = 2l + 2w.'},{title:'Substitute values',text:'P = 2('+l+') + 2('+w+')'},{title:'Add',text:'P = '+(2*l+2*w)+' units.'}]};} if(type==='triangle-area'){const[b,h]=nums; return {answer:String((b*h)/2),help:'Formula: A = 1/2 bh',steps:[{title:'Choose the formula',text:'Triangle area uses A = 1/2 × b × h.'},{title:'Substitute values',text:'A = 1/2 × '+b+' × '+h},{title:'Solve',text:'A = '+((b*h)/2)+' square units.'}]};} if(type==='circle-area'){const[r]=nums; const ans=Math.round(pi*r*r*100)/100; return {answer:String(ans),help:'Formula: A = πr² with π ≈ 3.14',steps:[{title:'Choose the formula',text:'Circle area uses A = πr².'},{title:'Substitute values',text:'A = 3.14 × '+r+'²'},{title:'Solve',text:'A = '+ans+' square units.'}]};} if(type==='circle-circumference'){const[r]=nums; const ans=Math.round(2*pi*r*100)/100; return {answer:String(ans),help:'Formula: C = 2πr',steps:[{title:'Choose the formula',text:'Circle circumference uses C = 2πr.'},{title:'Substitute values',text:'C = 2 × 3.14 × '+r},{title:'Solve',text:'C = '+ans+' units.'}]};} if(type==='slope'){const[x1,y1,x2,y2]=nums; const rise=y2-y1; const run=x2-x1; if(run===0) return {answer:'Undefined',help:'Slope is undefined because x₂ - x₁ = 0.',steps:[{title:'Use the slope formula',text:'m = (y₂ - y₁) / (x₂ - x₁)'},{title:'Substitute values',text:'m = ('+y2+' - '+y1+') / ('+x2+' - '+x1+')'},{title:'Check denominator',text:'The denominator is 0, so the slope is undefined.'}]}; const frac=fractionFromDecimal(rise/run); const ans=frac&&frac.d!==1?frac.n+'/'+frac.d:String(rise/run); return {answer:ans,help:'Formula: m = (y₂ - y₁) / (x₂ - x₁)',steps:[{title:'Use the slope formula',text:'m = (y₂ - y₁) / (x₂ - x₁)'},{title:'Substitute values',text:'m = ('+y2+' - '+y1+') / ('+x2+' - '+x1+')'},{title:'Simplify',text:'m = '+rise+'/'+run+' = '+ans}]};} if(type==='prism-volume'){const[l,w,h]=nums; return {answer:String(l*w*h),help:'Formula: V = lwh',steps:[{title:'Choose the formula',text:'Rectangular prism volume uses V = l × w × h.'},{title:'Substitute values',text:'V = '+l+' × '+w+' × '+h},{title:'Multiply',text:'V = '+(l*w*h)+' cubic units.'}]};} if(type==='cylinder-volume'){const[r,h]=nums; const ans=Math.round(pi*r*r*h*100)/100; return {answer:String(ans),help:'Formula: V = πr²h',steps:[{title:'Choose the formula',text:'Cylinder volume uses V = πr²h.'},{title:'Substitute values',text:'V = 3.14 × '+r+'² × '+h},{title:'Solve',text:'V = '+ans+' cubic units.'}]};} throw new Error('Use the geometry cards or enter a valid geometry command.');}
+    const quizData = {
+      fractions: [
+        { q: 'What is 1/2 + 1/4 ?', a: '3/4', c: 'Add with a common denominator of 4, then simplify.' },
+        { q: 'What is 3/5 - 1/5 ?', a: '2/5', c: 'The denominators match, so subtract the tops.' },
+        { q: 'What is 2/3 of 9 ?', a: '6', c: 'Multiply 9 by 2/3.' }
+      ],
+      equations: [
+        { q: 'Solve: x + 7 = 15', a: 'x = 8', c: 'Subtract 7 from both sides.' },
+        { q: 'Solve: 2x = 10', a: 'x = 5', c: 'Divide both sides by 2.' },
+        { q: 'Solve: 3x - 3 = 12', a: 'x = 5', c: 'Add 3, then divide by 3.' }
+      ],
+      geometry: [
+        { q: 'What is the area of a rectangle with l=8 and w=5?', a: '40 square units', c: 'Use A = l × w.' },
+        { q: 'What is the area of a triangle with base 10 and height 6?', a: '30 square units', c: 'Use A = 1/2 bh.' },
+        { q: 'What is the slope from (2,1) to (4,4)?', a: '3/2', c: 'Use m = (y2 - y1)/(x2 - x1).' }
+      ]
+    };
+    let quizMode = 'fractions';
+    let quizIndex = 0;
+    const quizStateKey = 'gedQuizProgressV1';
+    let quizState = { correct: 0, total: 0 };
+    function saveQuizState(){ try { localStorage.setItem(quizStateKey, JSON.stringify(quizState)); } catch(e) {} }
+    function loadQuizState(){ try { const s = localStorage.getItem(quizStateKey); if (s) quizState = JSON.parse(s); } catch(e) {} }
+    function updateProgressUI(){ const pct = quizState.total ? Math.round((quizState.correct / quizState.total) * 100) : 0; document.getElementById('scoreText').textContent = quizState.correct + ' correct'; document.getElementById('progressDetail').textContent = quizState.correct + ' of ' + quizState.total + ' questions correct.'; document.getElementById('progressBar').style.width = pct + '%'; }
+    function renderQuiz(){ const item = quizData[quizMode][quizIndex % quizData[quizMode].length]; document.getElementById('quizTitle').textContent = quizMode.charAt(0).toUpperCase()+quizMode.slice(1); document.getElementById('quizPrompt').textContent = item.q; document.getElementById('quizAnswer').hidden = true; document.getElementById('quizAnswer').textContent = item.a + ' — ' + item.c; document.getElementById('quizShowBtn').textContent = 'Show answer'; }
+    document.querySelectorAll('[data-quiz-mode]').forEach(btn=>btn.addEventListener('click',()=>{quizMode=btn.dataset.quizMode; quizIndex=0; document.querySelectorAll('[data-quiz-mode]').forEach(t=>t.classList.toggle('active',t===btn)); renderQuiz();}));
+    document.getElementById('quizShowBtn').addEventListener('click',()=>{const ans=document.getElementById('quizAnswer'); ans.hidden = !ans.hidden; document.getElementById('quizShowBtn').textContent = ans.hidden ? 'Show answer' : 'Hide answer';});
+    document.getElementById('quizNextBtn').addEventListener('click',()=>{ const item = quizData[quizMode][quizIndex % quizData[quizMode].length]; const shown = document.getElementById('quizAnswer'); const isCorrect = !shown.hidden && shown.textContent.startsWith(item.a); quizState.total += 1; if (isCorrect) quizState.correct += 1; saveQuizState(); updateProgressUI(); quizIndex = (quizIndex + 1) % quizData[quizMode].length; renderQuiz(); });
+    document.getElementById('resetProgressBtn').addEventListener('click',()=>{ quizState = { correct: 0, total: 0 }; saveQuizState(); updateProgressUI(); });
+
+    function renderHistory(){if(!history.length){historyList.innerHTML='<div class="history-item"><strong>No solved problems yet</strong><span>Your last answers will show here.</span></div>';return;} historyList.innerHTML=history.map(item=>'<div class="history-item"><strong>'+item.expr+'</strong><span>'+item.answer+'</span></div>').join('');}
+    function applySolved(raw,solved){result.textContent=solved.answer; helperText.textContent=solved.help; renderSteps(solved.steps); history.unshift({expr:raw,answer:solved.answer}); history=history.slice(0,5); renderHistory();}
+    function solveCurrent(){try{if(typeof nerdamer==='undefined') throw new Error('Math engine is still loading. Try again in one second.'); const raw=expression.value.trim(); if(!raw) throw new Error('Type a problem first.'); let solved; if(currentMode==='fraction') solved=solveFraction(raw); else if(currentMode==='equation') solved=solveEquation(raw); else if(currentMode==='geometry') solved=solveGeometryCommand(raw); else solved=solveAdvanced(raw); applySolved(raw,solved);}catch(error){result.textContent='Error'; helperText.textContent=error.message; renderSteps([{title:'Fix needed',text:error.message}]);}}
+    function getNum(id){return Number(document.getElementById(id).value);} function runShapeAction(action){try{let raw=''; if(action==='rect-area'||action==='rect-perimeter'){raw=action+' '+getNum('rectLength')+' '+getNum('rectWidth');} else if(action==='triangle-area'){raw=action+' '+getNum('triBase')+' '+getNum('triHeight');} else if(action==='circle-area'||action==='circle-circumference'){raw=action+' '+getNum('circleRadius');} else if(action==='slope'){raw=action+' '+getNum('slopeX1')+' '+getNum('slopeY1')+' '+getNum('slopeX2')+' '+getNum('slopeY2');} else if(action==='prism-volume'){raw=action+' '+getNum('volA')+' '+getNum('volB')+' '+getNum('volC');} else if(action==='cylinder-volume'){raw=action+' '+getNum('volA')+' '+getNum('volB');} const solved=solveGeometryCommand(raw); setMode('geometry'); expression.value=raw; applySolved(raw,solved);}catch(error){result.textContent='Error'; helperText.textContent='Fill in the shape values first.'; renderSteps([{title:'Fix needed',text:error.message}]);}}
+    document.querySelectorAll('[data-geo-action]').forEach(btn=>btn.addEventListener('click',()=>runShapeAction(btn.dataset.geoAction)));
+    document.querySelectorAll('[data-insert]').forEach(btn=>btn.addEventListener('click',()=>{expression.setRangeText(btn.dataset.insert,expression.selectionStart,expression.selectionEnd,'end'); expression.focus();}));
+    document.querySelectorAll('[data-example]').forEach(btn=>btn.addEventListener('click',()=>{setMode(btn.dataset.modeSet||'advanced'); expression.value=btn.dataset.example; solveCurrent(); expression.focus();}));
+    document.getElementById('clearBtn').addEventListener('click',()=>{expression.value=''; result.textContent='0'; helperText.textContent='Use sqrt( ) for roots, ^ for powers, and / for fractions.'; renderSteps([{title:'Ready',text:'Your study steps will appear here.'}]); setMode('advanced'); expression.focus();});
+    document.getElementById('backBtn').addEventListener('click',()=>{const start=expression.selectionStart; const end=expression.selectionEnd; if(start===end&&start>0) expression.setRangeText('',start-1,end,'end'); else expression.setRangeText('',start,end,'end'); expression.focus();});
+    document.getElementById('solveBtn').addEventListener('click',solveCurrent); expression.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault(); solveCurrent();}});
+    cameraInput.addEventListener('change',()=>{const file=cameraInput.files&&cameraInput.files[0]; if(!file) return; selectedImageFile=file; previewImage.src=URL.createObjectURL(file); previewImage.hidden=false; ocrStatus.textContent='Picture selected. Tap "Read math text".';});
+    readImageBtn.addEventListener('click',async()=>{if(!selectedImageFile){ocrStatus.textContent='Choose a picture first.'; return;} if(typeof Tesseract==='undefined'){ocrStatus.textContent='OCR engine is still loading. Try again in a moment.'; return;} try{ocrStatus.textContent='Reading text from picture...'; const { data:{ text } } = await Tesseract.recognize(selectedImageFile,'eng'); ocrText.value=text.trim(); ocrStatus.textContent='Text read from picture.';}catch(error){ocrStatus.textContent='Could not read that picture. Try a clearer photo.';}});
+    clearImageBtn.addEventListener('click',()=>{selectedImageFile=null; cameraInput.value=''; previewImage.removeAttribute('src'); previewImage.hidden=true; ocrText.value=''; ocrStatus.textContent='Picture cleared.';});
+    document.getElementById('clearImageBtn').addEventListener('click',()=>{selectedImageFile=null; cameraInput.value=''; previewImage.removeAttribute('src'); previewImage.hidden=true; ocrText.value=''; ocrStatus.textContent='Picture cleared.';});
+    useOcrTextBtn.addEventListener('click',()=>{if(!ocrText.value.trim()){ocrStatus.textContent='No OCR text yet.'; return;} expression.value=ocrText.value.trim().replace(/\n+/g,' '); ocrStatus.textContent='OCR text copied into calculator.';});
+    renderHistory(); setMode('advanced'); setShape('rectangle'); renderQuiz(); if(window.lucide) lucide.createIcons();
+  </script>
+</body>
+</html>
